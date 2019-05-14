@@ -26,7 +26,7 @@ parser.add_argument('--model', type=str, default='LSTM', help='type of recurrent
 parser.add_argument('--emsize', type=int, default=200, help='size of word embeddings')
 parser.add_argument('--nhid', type=int, default=300, help='number of hidden units per layer')
 parser.add_argument('--nlayers', type=int, default=1, help='number of layers')
-parser.add_argument('--r', type=int, default=30, help='r in paper, # of keywords you want to focus on')
+parser.add_argument('--r', type=int, default=36, help='r in paper, # of keywords you want to focus on')
 parser.add_argument('--mlp_nhid', type=int, default=3000, help='r in paper, # of keywords you want to focus on')
 parser.add_argument('--da', type=int, default=350, help='da in paper' )
 parser.add_argument('--lamb', type=float, default=1, help='penalization term coefficient')
@@ -39,7 +39,7 @@ parser.add_argument('--batch-size', type=int, default=32, metavar='N', help='bat
 parser.add_argument('--eval_size', type=int, default=32, metavar='N', help='evaluation batch size')
 parser.add_argument('--seed', type=int, default=1111, help='random seed')
 parser.add_argument('--pretrained', type=str, default='', help='whether start from pretrained model')
-parser.add_argument('--cuda', default=False, action='store_true', help='use CUDA')
+parser.add_argument('--cuda', default=True, action='store_true', help='use CUDA')
 parser.add_argument('--log-interval', type=int, default=10, metavar='N', help='report interval')
 parser.add_argument('--save', type=str,  default='Attentive-best.pt', help='path to save the final model')
 
@@ -89,7 +89,6 @@ if args.cuda:
     model.cuda()
     entropy_loss.cuda()
 
-
 # Define the training function
 def train( lr, epoch ):
     # word_update: whether glove vectors are updated
@@ -106,7 +105,6 @@ def train( lr, epoch ):
     optimizer = torch.optim.SGD( params, lr, momentum = args.momentum, weight_decay = args.weight_decay )
 
     for batch_idx, start_idx in enumerate( range( 0, train_data.size(0) - 1, args.batch_size ) ):
-
         # Retrieve one batch for training
         data, targets, len_li = get_batch( train_data, train_label, train_len, start_idx, args.batch_size, args.cuda )
         hidden = repackage_hidden( hidden )
@@ -138,7 +136,6 @@ def train( lr, epoch ):
 
             total_loss = 0
             start_time = time.time()
-
     return np.mean( all_losses )
 
 
@@ -192,7 +189,7 @@ print('# of Epochs:', args.epochs)
 
 for epoch in range( 1, args.epochs + 1 ):
     epoch_start_time = time.time()
-    all_losses.append( train( lr, epoch )[0] )
+    all_losses.append( train( lr, epoch ) )
     val_loss = evaluate( val_data, val_label, val_len )
     print( '-'*80 )
     print( '| end of epoch {:3d} | time: {:5.2f}s | valid loss {:5.4f} | '

@@ -90,7 +90,7 @@ class SelfAttentive( nn.Module ):
         # MLP block for Classifier Feature
         MLPhidden = self.MLP( BM )
         decoded = self.decoder( functional.relu( MLPhidden ) )
-
+        print
         return decoded, hidden, penal, weights
 
     def init_hidden( self, bsz ):

@@ -19,7 +19,8 @@ def select_data( data, bsz ):
 # Unpack the hidden state
 def repackage_hidden( h ):
     """Wraps hidden states in new Variables, to detach them from their history."""
-    if type( h ) == Variable:
+    # if type( h ) == Variable:
+    if isinstance(h,Variable):
         return Variable( h.data )
     else:
         return tuple( repackage_hidden( v ) for v in h )
